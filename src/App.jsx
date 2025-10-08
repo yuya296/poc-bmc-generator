@@ -1,0 +1,195 @@
+import { useState, useEffect } from 'react'
+import TemplateSelector from './components/TemplateSelector'
+import InputForm from './components/InputForm'
+import OutputDisplay from './components/OutputDisplay'
+import ApiKeyInput from './components/ApiKeyInput'
+import './App.css'
+
+function App() {
+  const [apiKey, setApiKey] = useState('')
+  const [selectedTemplate, setSelectedTemplate] = useState(null)
+  const [formData, setFormData] = useState({})
+  const [output, setOutput] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  // Load API key from localStorage on mount
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem('openrouter_api_key')
+    if (savedApiKey) {
+      setApiKey(savedApiKey)
+    }
+  }, [])
+
+  const handleApiKeyChange = (key) => {
+    setApiKey(key)
+    localStorage.setItem('openrouter_api_key', key)
+  }
+
+  const handleTemplateSelect = (template) => {
+    setSelectedTemplate(template)
+    setFormData({})
+    setOutput('')
+    setError('')
+  }
+
+  const handleFormDataChange = (data) => {
+    setFormData(data)
+  }
+
+  const generatePrompt = (template, data) => {
+    let prompt = template.promptTemplate
+
+    // Replace placeholders with actual data
+    template.placeholders.forEach((placeholder) => {
+      const value = data[placeholder.id] || ''
+
+      if (placeholder.optional && !value) {
+        // Remove optional sections if empty
+        prompt = prompt.replace(new RegExp(`\\{${placeholder.id}\\}`, 'g'), '')
+      } else if (placeholder.optional && value) {
+        // Include optional section with label
+        prompt = prompt.replace(
+          new RegExp(`\\{${placeholder.id}\\}`, 'g'),
+          `## ${placeholder.label}\n${value}\n\n`
+        )
+      } else {
+        // Required fields - just replace the placeholder
+        prompt = prompt.replace(new RegExp(`\\{${placeholder.id}\\}`, 'g'), value)
+      }
+    })
+
+    return prompt
+  }
+
+  const handleGenerate = async () => {
+    if (!apiKey) {
+      setError('OpenRouter APIキーを入力してください')
+      return
+    }
+
+    if (!selectedTemplate) {
+      setError('テンプレートを選択してください')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+
+    try {
+      const prompt = generatePrompt(selectedTemplate, formData)
+
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': window.location.origin,
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-4o-mini',
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
+          ]
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error?.message || 'API呼び出しに失敗しました')
+      }
+
+      const data = await response.json()
+      const result = data.choices[0]?.message?.content || ''
+
+      setOutput(result)
+
+      // Save to localStorage
+      const savedData = {
+        template: selectedTemplate.id,
+        formData,
+        output: result,
+        timestamp: new Date().toISOString()
+      }
+      localStorage.setItem(`result_${Date.now()}`, JSON.stringify(savedData))
+
+    } catch (err) {
+      setError(err.message || 'エラーが発生しました')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <div className="container">
+          <h1>🧠 AI対話型ビジネスモデル設計ツール</h1>
+          <p>AIと対話しながらビジネスフレームワークを構築</p>
+        </div>
+      </header>
+
+      <main className="container">
+        <ApiKeyInput apiKey={apiKey} onApiKeyChange={handleApiKeyChange} />
+
+        <div className="main-content">
+          <section className="template-section">
+            <h2>📋 フレームワークを選択</h2>
+            <TemplateSelector
+              selectedTemplate={selectedTemplate}
+              onTemplateSelect={handleTemplateSelect}
+            />
+          </section>
+
+          {selectedTemplate && (
+            <>
+              <section className="input-section">
+                <h2>✍️ 入力フォーム</h2>
+                <InputForm
+                  template={selectedTemplate}
+                  formData={formData}
+                  onFormDataChange={handleFormDataChange}
+                />
+                <div className="actions">
+                  <button
+                    className="btn-primary"
+                    onClick={handleGenerate}
+                    disabled={loading || !apiKey}
+                  >
+                    {loading ? '生成中...' : 'AI生成開始'}
+                  </button>
+                </div>
+                {error && <div className="error">{error}</div>}
+              </section>
+
+              {(loading || output) && (
+                <section className="output-section">
+                  <h2>📊 生成結果</h2>
+                  {loading ? (
+                    <div className="loading">
+                      <div className="spinner"></div>
+                      <p>AIが分析中...</p>
+                    </div>
+                  ) : (
+                    <OutputDisplay output={output} />
+                  )}
+                </section>
+              )}
+            </>
+          )}
+        </div>
+      </main>
+
+      <footer className="app-footer">
+        <div className="container">
+          <p>Powered by OpenRouter • サーバーレス構成</p>
+        </div>
+      </footer>
+    </div>
+  )
+}
+
+export default App

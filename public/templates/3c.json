@@ -1,0 +1,35 @@
+{
+  "id": "3c",
+  "name": "3C分析",
+  "description": "Customer（市場・顧客）、Competitor（競合）、Company（自社）を分析するフレームワーク",
+  "placeholders": [
+    {
+      "id": "business_context",
+      "label": "ビジネスコンテキスト",
+      "placeholder": "分析対象のビジネスや市場を説明してください",
+      "type": "textarea"
+    },
+    {
+      "id": "customer",
+      "label": "Customer（市場・顧客）",
+      "placeholder": "市場や顧客のニーズ、特性について",
+      "type": "textarea",
+      "optional": true
+    },
+    {
+      "id": "competitor",
+      "label": "Competitor（競合）",
+      "placeholder": "競合他社の状況について",
+      "type": "textarea",
+      "optional": true
+    },
+    {
+      "id": "company",
+      "label": "Company（自社）",
+      "placeholder": "自社の強みや特徴について",
+      "type": "textarea",
+      "optional": true
+    }
+  ],
+  "promptTemplate": "以下のビジネスについて3C分析を行ってください。\n\n## ビジネスコンテキスト\n{business_context}\n\n{customer}{competitor}{company}\n---\n\nCustomer（市場・顧客）、Competitor（競合）、Company（自社）の3つの視点から分析し、Markdown形式で出力してください。既に入力されている項目は参考にし、不足している項目は推測して補完してください。"
+}

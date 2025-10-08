@@ -1,0 +1,42 @@
+{
+  "id": "swot",
+  "name": "SWOT分析",
+  "description": "強み・弱み・機会・脅威を分析するフレームワーク",
+  "placeholders": [
+    {
+      "id": "business_context",
+      "label": "ビジネスコンテキスト",
+      "placeholder": "分析対象のビジネスや状況を説明してください",
+      "type": "textarea"
+    },
+    {
+      "id": "strengths",
+      "label": "強み (Strengths)",
+      "placeholder": "内部の強みは何か？（オプション）",
+      "type": "textarea",
+      "optional": true
+    },
+    {
+      "id": "weaknesses",
+      "label": "弱み (Weaknesses)",
+      "placeholder": "内部の弱みは何か？（オプション）",
+      "type": "textarea",
+      "optional": true
+    },
+    {
+      "id": "opportunities",
+      "label": "機会 (Opportunities)",
+      "placeholder": "外部の機会は何か？（オプション）",
+      "type": "textarea",
+      "optional": true
+    },
+    {
+      "id": "threats",
+      "label": "脅威 (Threats)",
+      "placeholder": "外部の脅威は何か？（オプション）",
+      "type": "textarea",
+      "optional": true
+    }
+  ],
+  "promptTemplate": "以下のビジネスについてSWOT分析を行ってください。\n\n## ビジネスコンテキスト\n{business_context}\n\n{strengths}{weaknesses}{opportunities}{threats}\n---\n\n強み（Strengths）、弱み（Weaknesses）、機会（Opportunities）、脅威（Threats）の4つの視点から分析し、Markdown形式で出力してください。既に入力されている項目は参考にし、不足している項目は推測して補完してください。"
+}
