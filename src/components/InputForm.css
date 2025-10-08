@@ -1,0 +1,11 @@
+.input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.optional {
+  color: #999;
+  font-weight: normal;
+  font-size: 0.9em;
+}

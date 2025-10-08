@@ -1,0 +1,62 @@
+{
+  "id": "bmc",
+  "name": "ビジネスモデルキャンバス (BMC)",
+  "description": "9つの要素でビジネスモデルを可視化するフレームワーク",
+  "placeholders": [
+    {
+      "id": "customer_segments",
+      "label": "顧客セグメント",
+      "placeholder": "誰のために価値を創造するのか？",
+      "type": "textarea"
+    },
+    {
+      "id": "value_propositions",
+      "label": "価値提案",
+      "placeholder": "どんな価値を提供するのか？",
+      "type": "textarea"
+    },
+    {
+      "id": "channels",
+      "label": "チャネル",
+      "placeholder": "どのように価値を届けるのか？",
+      "type": "textarea"
+    },
+    {
+      "id": "customer_relationships",
+      "label": "顧客との関係",
+      "placeholder": "どのように顧客と関係を築くのか？",
+      "type": "textarea"
+    },
+    {
+      "id": "revenue_streams",
+      "label": "収益の流れ",
+      "placeholder": "どのように収益を得るのか？",
+      "type": "textarea"
+    },
+    {
+      "id": "key_resources",
+      "label": "リソース",
+      "placeholder": "必要な経営資源は何か？",
+      "type": "textarea"
+    },
+    {
+      "id": "key_activities",
+      "label": "主要活動",
+      "placeholder": "何をする必要があるか？",
+      "type": "textarea"
+    },
+    {
+      "id": "key_partnerships",
+      "label": "パートナー",
+      "placeholder": "誰と協力するのか？",
+      "type": "textarea"
+    },
+    {
+      "id": "cost_structure",
+      "label": "コスト構造",
+      "placeholder": "主なコストは何か？",
+      "type": "textarea"
+    }
+  ],
+  "promptTemplate": "以下の情報を元に、ビジネスモデルキャンバス（BMC）を作成してください。\n\n## 顧客セグメント\n{customer_segments}\n\n## 価値提案\n{value_propositions}\n\n## チャネル\n{channels}\n\n## 顧客との関係\n{customer_relationships}\n\n## 収益の流れ\n{revenue_streams}\n\n## リソース\n{key_resources}\n\n## 主要活動\n{key_activities}\n\n## パートナー\n{key_partnerships}\n\n## コスト構造\n{cost_structure}\n\n---\n\n各要素について分析し、整理されたビジネスモデルキャンバスをMarkdown形式で出力してください。"
+}

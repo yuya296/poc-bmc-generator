@@ -1,0 +1,33 @@
+{
+  "id": "user-story-map",
+  "name": "ユーザーストーリーマッピング",
+  "description": "ユーザーの行動を時系列で可視化し、優先順位をつけるフレームワーク",
+  "placeholders": [
+    {
+      "id": "product_context",
+      "label": "プロダクトコンテキスト",
+      "placeholder": "どんなプロダクト・サービスか説明してください",
+      "type": "textarea"
+    },
+    {
+      "id": "target_user",
+      "label": "ターゲットユーザー",
+      "placeholder": "主なユーザーは誰か？",
+      "type": "textarea"
+    },
+    {
+      "id": "user_goals",
+      "label": "ユーザーのゴール",
+      "placeholder": "ユーザーが達成したいことは何か？",
+      "type": "textarea"
+    },
+    {
+      "id": "current_features",
+      "label": "既存機能（オプション）",
+      "placeholder": "既に存在する機能があれば記載",
+      "type": "textarea",
+      "optional": true
+    }
+  ],
+  "promptTemplate": "以下の情報を元に、ユーザーストーリーマッピングを作成してください。\n\n## プロダクトコンテキスト\n{product_context}\n\n## ターゲットユーザー\n{target_user}\n\n## ユーザーのゴール\n{user_goals}\n\n{current_features}\n---\n\nユーザーの行動を時系列で整理し、以下の形式でMarkdownで出力してください：\n\n1. ユーザーアクティビティ（大きな行動の流れ）\n2. 各アクティビティ配下のユーザーストーリー\n3. 優先順位（MVP、Phase 2、Phase 3など）による分類"
+}
