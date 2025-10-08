@@ -9,7 +9,7 @@ function InputForm({ template, formData, onFormDataChange }) {
       initialData[placeholder.id] = ''
     })
     onFormDataChange(initialData)
-  }, [template.id])
+  }, [template.id, template.placeholders, onFormDataChange])
 
   const handleInputChange = (placeholderId, value) => {
     onFormDataChange({

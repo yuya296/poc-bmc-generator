@@ -11,6 +11,7 @@ const TEMPLATE_FILES = [
 function TemplateSelector({ selectedTemplate, onTemplateSelect }) {
   const [templates, setTemplates] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const loadTemplates = async () => {
@@ -24,6 +25,7 @@ function TemplateSelector({ selectedTemplate, onTemplateSelect }) {
         setTemplates(loadedTemplates)
       } catch (error) {
         console.error('Failed to load templates:', error)
+        setError('テンプレートの読み込みに失敗しました')
       } finally {
         setLoading(false)
       }
@@ -34,6 +36,10 @@ function TemplateSelector({ selectedTemplate, onTemplateSelect }) {
 
   if (loading) {
     return <div className="loading">テンプレート読み込み中...</div>
+  }
+
+  if (error) {
+    return <div className="error">{error}</div>
   }
 
   return (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import './OutputDisplay.css'
 
 function OutputDisplay({ output }) {
@@ -13,8 +14,9 @@ function OutputDisplay({ output }) {
         gfm: true
       })
 
-      const htmlContent = marked.parse(output)
-      setHtml(htmlContent)
+      const rawHtml = marked.parse(output)
+      const sanitizedHtml = DOMPurify.sanitize(rawHtml)
+      setHtml(sanitizedHtml)
     }
   }, [output])
 

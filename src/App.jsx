@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import TemplateSelector from './components/TemplateSelector'
 import InputForm from './components/InputForm'
 import OutputDisplay from './components/OutputDisplay'
@@ -33,9 +33,9 @@ function App() {
     setError('')
   }
 
-  const handleFormDataChange = (data) => {
+  const handleFormDataChange = useCallback((data) => {
     setFormData(data)
-  }
+  }, [])
 
   const generatePrompt = (template, data) => {
     let prompt = template.promptTemplate
@@ -107,13 +107,25 @@ function App() {
 
       setOutput(result)
 
-      // Save to localStorage
+      // Save to localStorage with limit (keep only last 10 results)
       const savedData = {
         template: selectedTemplate.id,
         formData,
         output: result,
         timestamp: new Date().toISOString()
       }
+
+      // Get all existing result keys
+      const resultKeys = Object.keys(localStorage)
+        .filter(key => key.startsWith('result_'))
+        .sort()
+
+      // Remove oldest results if we have 10 or more
+      if (resultKeys.length >= 10) {
+        const keysToRemove = resultKeys.slice(0, resultKeys.length - 9)
+        keysToRemove.forEach(key => localStorage.removeItem(key))
+      }
+
       localStorage.setItem(`result_${Date.now()}`, JSON.stringify(savedData))
 
     } catch (err) {
