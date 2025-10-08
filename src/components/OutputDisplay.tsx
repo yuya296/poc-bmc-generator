@@ -3,8 +3,12 @@ import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import './OutputDisplay.css'
 
-function OutputDisplay({ output }) {
-  const [html, setHtml] = useState('')
+interface OutputDisplayProps {
+  output: string;
+}
+
+function OutputDisplay({ output }: OutputDisplayProps): JSX.Element {
+  const [html, setHtml] = useState<string>('')
 
   useEffect(() => {
     if (output) {
@@ -14,18 +18,23 @@ function OutputDisplay({ output }) {
         gfm: true
       })
 
-      const rawHtml = marked.parse(output)
+      const rawHtml = marked.parse(output) as string
       const sanitizedHtml = DOMPurify.sanitize(rawHtml)
       setHtml(sanitizedHtml)
     }
   }, [output])
 
-  const handleCopyMarkdown = () => {
+  const handleCopyMarkdown = (): void => {
     navigator.clipboard.writeText(output)
-    alert('Markdownをクリップボードにコピーしました')
+      .then(() => {
+        alert('Markdownをクリップボードにコピーしました')
+      })
+      .catch((err: Error) => {
+        console.error('Failed to copy:', err)
+      })
   }
 
-  const handleExportMarkdown = () => {
+  const handleExportMarkdown = (): void => {
     const blob = new Blob([output], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')

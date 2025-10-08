@@ -1,8 +1,13 @@
 import { useState } from 'react'
 import './ApiKeyInput.css'
 
-function ApiKeyInput({ apiKey, onApiKeyChange }) {
-  const [showKey, setShowKey] = useState(false)
+interface ApiKeyInputProps {
+  apiKey: string;
+  onApiKeyChange: (key: string) => void;
+}
+
+function ApiKeyInput({ apiKey, onApiKeyChange }: ApiKeyInputProps): JSX.Element {
+  const [showKey, setShowKey] = useState<boolean>(false)
 
   return (
     <section className="api-key-section">
@@ -11,13 +16,13 @@ function ApiKeyInput({ apiKey, onApiKeyChange }) {
         <input
           type={showKey ? 'text' : 'password'}
           value={apiKey}
-          onChange={(e) => onApiKeyChange(e.target.value)}
+          onChange={(e): void => onApiKeyChange(e.target.value)}
           placeholder="sk-or-v1-..."
           className="api-key-input"
         />
         <button
           className="btn-toggle"
-          onClick={() => setShowKey(!showKey)}
+          onClick={(): void => setShowKey(!showKey)}
           type="button"
         >
           {showKey ? '👁️' : '👁️‍🗨️'}

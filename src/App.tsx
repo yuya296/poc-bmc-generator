@@ -3,51 +3,52 @@ import TemplateSelector from './components/TemplateSelector'
 import InputForm from './components/InputForm'
 import OutputDisplay from './components/OutputDisplay'
 import ApiKeyInput from './components/ApiKeyInput'
+import type { Template, FormData, ChatCompletionResponse, OpenRouterError, SavedResult } from './types'
 import './App.css'
 
-function App() {
-  const [apiKey, setApiKey] = useState('')
-  const [selectedTemplate, setSelectedTemplate] = useState(null)
-  const [formData, setFormData] = useState({})
-  const [output, setOutput] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+function App(): JSX.Element {
+  const [apiKey, setApiKey] = useState<string>('')
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null)
+  const [formData, setFormData] = useState<FormData>({})
+  const [output, setOutput] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
 
   // Load API key from localStorage on mount
   useEffect(() => {
     const savedApiKey = localStorage.getItem('openrouter_api_key')
-    if (savedApiKey) {
+    if (savedApiKey !== null) {
       setApiKey(savedApiKey)
     }
   }, [])
 
-  const handleApiKeyChange = (key) => {
+  const handleApiKeyChange = (key: string): void => {
     setApiKey(key)
     localStorage.setItem('openrouter_api_key', key)
   }
 
-  const handleTemplateSelect = (template) => {
+  const handleTemplateSelect = (template: Template): void => {
     setSelectedTemplate(template)
     setFormData({})
     setOutput('')
     setError('')
   }
 
-  const handleFormDataChange = useCallback((data) => {
+  const handleFormDataChange = useCallback((data: FormData): void => {
     setFormData(data)
   }, [])
 
-  const generatePrompt = (template, data) => {
+  const generatePrompt = (template: Template, data: FormData): string => {
     let prompt = template.promptTemplate
 
     // Replace placeholders with actual data
     template.placeholders.forEach((placeholder) => {
-      const value = data[placeholder.id] || ''
+      const value = data[placeholder.id] ?? ''
 
-      if (placeholder.optional && !value) {
+      if (placeholder.optional === true && value === '') {
         // Remove optional sections if empty
         prompt = prompt.replace(new RegExp(`\\{${placeholder.id}\\}`, 'g'), '')
-      } else if (placeholder.optional && value) {
+      } else if (placeholder.optional === true && value !== '') {
         // Include optional section with label
         prompt = prompt.replace(
           new RegExp(`\\{${placeholder.id}\\}`, 'g'),
@@ -62,13 +63,13 @@ function App() {
     return prompt
   }
 
-  const handleGenerate = async () => {
-    if (!apiKey) {
+  const handleGenerate = async (): Promise<void> => {
+    if (apiKey === '') {
       setError('OpenRouter APIキーを入力してください')
       return
     }
 
-    if (!selectedTemplate) {
+    if (selectedTemplate === null) {
       setError('テンプレートを選択してください')
       return
     }
@@ -98,17 +99,17 @@ function App() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error?.message || 'API呼び出しに失敗しました')
+        const errorData = await response.json() as OpenRouterError
+        throw new Error(errorData.error?.message ?? 'API呼び出しに失敗しました')
       }
 
-      const data = await response.json()
-      const result = data.choices[0]?.message?.content || ''
+      const data = await response.json() as ChatCompletionResponse
+      const result = data.choices[0]?.message?.content ?? ''
 
       setOutput(result)
 
       // Save to localStorage with limit (keep only last 10 results)
-      const savedData = {
+      const savedData: SavedResult = {
         template: selectedTemplate.id,
         formData,
         output: result,
@@ -128,8 +129,9 @@ function App() {
 
       localStorage.setItem(`result_${Date.now()}`, JSON.stringify(savedData))
 
-    } catch (err) {
-      setError(err.message || 'エラーが発生しました')
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'エラーが発生しました'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -156,7 +158,7 @@ function App() {
             />
           </section>
 
-          {selectedTemplate && (
+          {selectedTemplate !== null && (
             <>
               <section className="input-section">
                 <h2>✍️ 入力フォーム</h2>
@@ -168,16 +170,16 @@ function App() {
                 <div className="actions">
                   <button
                     className="btn-primary"
-                    onClick={handleGenerate}
-                    disabled={loading || !apiKey}
+                    onClick={(): void => { void handleGenerate() }}
+                    disabled={loading || apiKey === ''}
                   >
                     {loading ? '生成中...' : 'AI生成開始'}
                   </button>
                 </div>
-                {error && <div className="error">{error}</div>}
+                {error !== '' && <div className="error">{error}</div>}
               </section>
 
-              {(loading || output) && (
+              {(loading || output !== '') && (
                 <section className="output-section">
                   <h2>📊 生成結果</h2>
                   {loading ? (
